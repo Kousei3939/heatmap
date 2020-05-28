@@ -1,31 +1,55 @@
 <?php
-include('./config.php');
- 
-if(isset($_POST['time']) && isset($_POST['page'])
-&& isset($_POST['xcoord'])&& isset($_POST['ycoord'])
-){
- 
-    $data = array();
-    $page = htmlentities($_POST['page']);
-    if($page == "/"){ $page = "/index.php"; }
-    $mysqldatebefore = date( 'Y-m-d H:i:s', strtotime("-1 ".$_POST['time']) );
- 
-      $con2 = mysql_connect('localhost', $dbuser, $dbpass);
-              mysql_select_db($dbname, $con2);
- 
-    $result = mysql_query("SELECT x, y FROM `clicks` WHERE `time` > '$mysqldatebefore' && page = '$page'");
-            $i = 0;
-             while($row = mysql_fetch_array($result)){
-                $data[$i] = array();
-                $data[$i]['x'] = $row['x'];
-                $data[$i]['y'] = $row['y']; 
-                $i++;
-             }
- 
-            $data['amount'] = $i;
-            mysql_close($con2);
-echo json_encode($data);
+try{
+    $pdo = new PDO(
+        'mysql:host=localhost;dbname=heatmap;charset=utf8',
+        'root',
+        ''
+    );
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+}catch(PDOException $Exception){
+    die('接続エラー：' .$Exception->getMessage());
 }
+try{
+    $sql = "SELECT * FROM heatmap";
+    $stmh = $pdo->prepare($sql);
+    $stmh->execute();
+}catch(PDOException $Exception){
+    die('接続エラー：' .$Exception->getMessage());
+}
+ 
+
+    while($row = $stmh->fetch(PDO::FETCH_ASSOC)){
+
+
+    }
+    $pdo = null;
+
+// if(isset($_POST['time']) && isset($_POST['page'])
+// && isset($_POST['xcoord'])&& isset($_POST['ycoord'])
+// ){
+ 
+//     $data = array();
+//     $page = htmlentities($_POST['page']);
+//     if($page == "/"){ $page = "/index.php"; }
+//     $mysqldatebefore = date( 'Y-m-d H:i:s', strtotime("-1 ".$_POST['time']) );
+ 
+//       $con2 = mysql_connect('localhost', $dbuser, $dbpass);
+//               mysql_select_db($dbname, $con2);
+ 
+//     $result = mysql_query("SELECT x, y FROM `clicks` WHERE `time` > '$mysqldatebefore' && page = '$page'");
+//             $i = 0;
+//              while($row = mysql_fetch_array($result)){
+//                 $data[$i] = array();
+//                 $data[$i]['x'] = $row['x'];
+//                 $data[$i]['y'] = $row['y']; 
+//                 $i++;
+//              }
+ 
+//             $data['amount'] = $i;
+//             mysql_close($con2);
+// echo json_encode($data);
+// }
  
 ?>
 
